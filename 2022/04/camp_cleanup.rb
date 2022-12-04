@@ -10,8 +10,7 @@ class ElfPair
   end
 
   def is_wholly_overlapping?
-    range_a.superset?(range_b) ||
-      range_a.subset?(range_b)
+    range_a.superset?(range_b) || range_a.subset?(range_b)
   end
 
   def is_intersecting?
@@ -28,9 +27,8 @@ class ElfPair
   private
 
   def to_set(spread)
-    spread.split("-").then do |(start, finish)|
-      range = start.to_i.upto(finish.to_i).to_a
-      Set.new(range)
+    spread.split("-").map(&:to_i).then do |(start, finish)|
+      Set.new(start.upto(finish))
     end
   end
 end
