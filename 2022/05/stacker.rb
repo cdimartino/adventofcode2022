@@ -1,5 +1,7 @@
 #!/bin/enb ruby
 
+require "debug"
+
 class Stacker
   attr_reader :stacks
 
@@ -7,11 +9,34 @@ class Stacker
     @stacks = stacks
   end
 
-  def move(count, from, to, reverse: true)
-    debug "moving #{count} from #{from} <#{stacks[from - 1]}> to #{to} <#{stacks[to - 1]}>"
-    move_stack = reverse ? stacks[from - 1].pop(count).reverse : stacks[from - 1].pop(count)
-    stacks[to - 1] += move_stack
-    debug "moved #{count} from #{from} <#{stacks[from - 1]}> to #{to} <#{stacks[to - 1]}>"
+  def self.from_input(lines)
+    column_idxs = [1, 5, 9, 13, 17, 21, 25, 29, 33]
+
+    [].then do |stacks|
+      lines.each do |line|
+        column_idxs.each_with_index do |line_idx, stack_idx|
+          stacks[stack_idx] ||= []
+
+          item = line[line_idx]&.strip
+          stacks[stack_idx] << item unless item.nil? || item.empty?
+        end
+      end
+
+      new(stacks)
+    end
+  end
+
+  def move(count, from, to, move_items_separately: true)
+    debug "Moving #{count} #{from + 1}<#{stacks[from].join}> to #{to + 1}<#{stacks[to].join}>"
+
+    stack_to_move = if move_items_separately
+      stacks[from].pop(count).reverse
+    else
+      stacks[from].pop(count)
+    end
+    stacks[to] += stack_to_move
+
+    debug "Moved #{count} #{from + 1}<#{stacks[from].join}> to #{to + 1}<#{stacks[to].join}>"
   end
 
   private
@@ -22,29 +47,35 @@ class Stacker
   end
 end
 
-stacks = [
-  %w[Q W P S Z R H D],
-  %w[V B R W Q H F],
-  %w[C V S H],
-  %w[H F G],
-  %w[P G J B Z],
-  %w[Q T J H W F L],
-  %w[Z T W D L V J N],
-  %w[D T Z C J G H F],
-  %w[W P V M B H]
-]
-
+# Roughly parse the input
 input = File.open("input.txt").readlines.map(&:chomp)
+stack_info = input[0..7]
 moves = input[10..]
 
-stacker = Stacker.new(stacks)
-
+# Parse the _moves_ from the file using a Regex. Instruct the Stacker on actions to take.
 RE = /move (?<quantity>\d+) from (?<from>\d+) to (?<to>\d+)/o
 
-moves.each do |instruction|
+instructions = moves.map do |instruction|
   move = RE.match(instruction).named_captures
-  quantity, from, to = move["quantity"].to_i, move["from"].to_i, move["to"].to_i
-  stacker.move(quantity, from, to, reverse: false)
+  [
+    move["quantity"].to_i,
+    move["from"].to_i - 1, # 0 indexed
+    move["to"].to_i - 1 # 0 indexed
+  ]
 end
 
-puts stacker.stacks.map(&:last).join
+# Create the Stacker using the input lines (not including the header)
+
+# Part 1
+stacker = Stacker.from_input(stack_info.reverse)
+instructions.each do |(quantity, from, to)|
+  stacker.move(quantity, from, to, move_items_separately: true)
+end
+puts "Part 1 answer: #{stacker.stacks.map(&:last).join}"
+
+# Part 2
+stacker = Stacker.from_input(stack_info.reverse)
+instructions.each do |(quantity, from, to)|
+  stacker.move(quantity, from, to, move_items_separately: false)
+end
+puts "Part 2 answer: #{stacker.stacks.map(&:last).join}"
