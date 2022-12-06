@@ -2,6 +2,8 @@
 
 require "debug"
 
+DEBUG = ENV.fetch("DEBUG", "false") == "true"
+
 class Stacker
   attr_reader :stacks
 
@@ -41,9 +43,8 @@ class Stacker
 
   private
 
-  DEBUG = true
   def debug msg
-    puts msg if DEBUG
+    warn msg if DEBUG
   end
 end
 
@@ -66,16 +67,43 @@ end
 
 # Create the Stacker using the input lines (not including the header)
 
+def debug
+  if DEBUG
+    yield
+  end
+end
+
+SPEED = ENV.fetch("SPEED", 0.2).to_f
+
 # Part 1
 stacker = Stacker.from_input(stack_info.reverse)
 instructions.each do |(quantity, from, to)|
+  debug do
+    pp stacker.stacks.map(&:join)
+  end
   stacker.move(quantity, from, to, move_items_separately: true)
+  debug do
+    pp stacker.stacks.map(&:join)
+    sleep(SPEED)
+    puts "Continue... "
+    gets
+  end
 end
-puts "Part 1 answer: #{stacker.stacks.map(&:last).join}"
+part_1 = stacker.stacks.map(&:last).join
 
 # Part 2
 stacker = Stacker.from_input(stack_info.reverse)
 instructions.each do |(quantity, from, to)|
   stacker.move(quantity, from, to, move_items_separately: false)
+  debug do
+    # pp stacker.stacks.map(&:join)
+    sleep(SPEED)
+  end
 end
-puts "Part 2 answer: #{stacker.stacks.map(&:last).join}"
+
+part_2 = stacker.stacks.map(&:last).join
+
+puts "Part 1 answer: #{part_1}"
+puts "Part 2 answer: #{part_2}"
+
+# puts "Ran #{instructions.size} moves, affecting #{instructions.map { _1[0] }.sum} boxes"

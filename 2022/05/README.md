@@ -50,7 +50,7 @@ The Elves just need to know which crate will end up on top of each stack; in thi
 
 After the rearrangement procedure completes, what crate ends up on top of each stack?
 
-Your puzzle answer was ZWHVFWQWW.
+Your puzzle answer was **ZWHVFWQWW.
 
 The first half of this puzzle is complete! It provides one gold star: *
 
@@ -98,7 +98,7 @@ In this example, the CrateMover 9001 has put the crates in a totally different o
 
 Before the rearrangement process finishes, update your simulation so that the Elves know where they should stand to be ready to unload the final supplies. After the rearrangement procedure completes, what crate ends up on top of each stack?
 
-HZFZCCWWV
+**HZFZCCWWV**
 
 That's the right answer! You are one gold star closer to collecting enough star fruit.
 
