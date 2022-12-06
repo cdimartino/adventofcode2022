@@ -6,9 +6,11 @@ IDX_OFFSET = MIN_IDX = LENGTH - 1
 input.each.with_index do |char, idx|
   next unless idx >= MIN_IDX
   range = input[idx - IDX_OFFSET..idx]
+  $stdout.write range.join
   if range.uniq.length == LENGTH
-    puts range.uniq.join
-    puts idx + 1
-    break
+    puts "⭐ #{idx + 1}"
+    # break
+  else
+    puts "👎"
   end
 end
