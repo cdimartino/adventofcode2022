@@ -29,6 +29,10 @@ class Head
   def to_s
     "<HEAD x: #{x} y: #{y}>"
   end
+
+  def tippity_tail
+
+  end
 end
 
 class Tail
@@ -63,31 +67,45 @@ class Tail
   end
 end
 
-head = og_head = Head.new(0, 0)
+def debug(msg)
+  $stdout.write msg if ENV.fetch("DEBUG", "false") == "true"
+end
 
+def info(msg)
+  $stdout.write msg if ENV.fetch("INFO", "false") == "true"
+end
+
+def manipulate_head!(head, tail)
+  moves = File.readlines("input.txt", chomp: true).map { _1.split(%r{\s+}) }.map { [_1, _2.to_i] }
+  moves.each do |(direction, count)|
+    info "... "
+    debug "CMD: #{direction} #{count} -- "
+    1.upto(count) do |step|
+      info "."
+      debug "##{step} from #{tail}... "
+      head.step(direction)
+      debug "               to   #{tail}\n"
+    end
+    info "\n"
+  end
+end
+
+head = og_head = Head.new(0, 0)
+segments = 1.upto(1).map do
+  tail = Tail.new(head)
+  head.tail = tail
+  head = tail
+end
+
+manipulate_head!(og_head, segments[-1])
+puts "Part One: #{segments.last.visited.uniq.length} == 6269 #{segments.last.visited.uniq.length == 6269 ? "🍺" : "💩"}"
+
+head = og_head = Head.new(0, 0)
 segments = 1.upto(9).map do
   tail = Tail.new(head)
   head.tail = tail
   head = tail
 end
 
-moves = File.readlines("input.txt", chomp: true).map { _1.split(%r{\s+}) }.map { [_1, _2.to_i] }
-moves.each do |(direction, count)|
-  $stdout.write "... "
-  # $stdout.write "CMD: #{direction} #{count} -- "
-  1.upto(count) do |step|
-    $stdout.write "."
-    # puts "##{step} from #{tail}... "
-    og_head.step(direction)
-    # puts "               to   #{tail}"
-  end
-  puts
-end
-
-debugger
-
-# def print_board(board)
-#   board.map do |row|
-#     row.join(" ")
-#   end
-# end
+manipulate_head!(og_head, segments[-1])
+puts "Part Two: #{segments.last.visited.uniq.length} == 2557 #{segments.last.visited.uniq.length == 2557 ? "🍺" : "💩"}"
