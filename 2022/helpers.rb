@@ -6,6 +6,6 @@ def info(msg)
   puts msg if ENV.fetch("INFO", "false") == "true"
 end
 
-def input_lines
-  File.readlines("input.txt", chomp: true)
+def input_lines(file = "input.txt")
+  File.readlines(file, chomp: true)
 end
