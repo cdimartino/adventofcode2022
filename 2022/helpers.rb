@@ -1,3 +1,5 @@
+require "debug"
+
 def debug(msg)
   puts msg if ENV.fetch("DEBUG", "false") == "true"
 end
